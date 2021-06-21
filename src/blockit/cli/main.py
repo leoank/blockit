@@ -18,8 +18,10 @@ def sdt(file) -> None:
     mempool_path = Path(file)
     click.secho(f"Loading mempool csv from {mempool_path}")
 
+    # Params to SDTMempool are manually selected after fine tuning..
+    # Implement automatic tuning later
     sdt_mempool = SDTMempool(
-        size_class=200, density_class=200, size_upper=1350, density_upper=0.0015
+        size_class=200, density_class=200, size_upper=2250, density_upper=0.0015
     )
 
     click.secho("Parsing txns from mempool csv")
