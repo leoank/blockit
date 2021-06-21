@@ -39,3 +39,22 @@ poetry install
 > Note: It might happen that project root does not get installed when you first execute the command above. If it is so, then just re-execute the above the command.
 
 ### CLI usage
+
+```bash
+Usage: blockit [OPTIONS] COMMAND [ARGS]...
+
+  Blockit console.
+
+Options:
+  --version  Show the version and exit.
+  --help     Show this message and exit.
+
+Commands:
+  sdt  invoke sdt implementation.
+```
+
+Example
+
+```bash
+blockit sdt ./mempool.csv
+```
