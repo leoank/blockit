@@ -10,11 +10,11 @@ implementation by author: https://github.com/ChuksXD/SDT-Blockchain
 
 import math
 from pathlib import Path
-from typing import List
+from typing import Dict
 
 from blockit.mempool.base import BaseMempool
 from blockit.txn.txn_block import TransactionBlock
-from blockit.txn.txn_unit import TransactionUnit
+from blockit.txn.txn_chain import TransactionChain
 from blockit.utils.io import write_block
 
 
@@ -50,14 +50,18 @@ class SDTMempool(BaseMempool):
         ]
         self.count = 0
         self.block = TransactionBlock()
+        self.txns = {}
 
-    def load_txns(self: "SDTMempool", txns: List[TransactionUnit]) -> None:
+    def load_txns(self: "SDTMempool", txns: Dict[str, TransactionChain]) -> None:
         """Load txns data from CSV.
 
         Args:
-            txns (List[TransactionUnit]): List of txns to load
+            txns (Dict[str, TransactionChain]): Dict of txns to load
         """
-        for txn in txns:
+        # Add txns to self for later use by build block for lookups
+        self.txns = txns
+
+        for _, txn in txns.items():
             self.count += 1
             density = txn.fee / txn.weight
             densityScaled = density / self.density_upper
@@ -78,7 +82,7 @@ class SDTMempool(BaseMempool):
             self.table[size_class][density_class].append(txn)
             self.sizeTable[size_class][density_class] += txn.weight
 
-    def build_block(self: "BaseMempool", block_limit: int) -> None:
+    def build_block(self: "SDTMempool", block_limit: int) -> None:
         """Build best block.
 
         Args:
@@ -101,7 +105,7 @@ class SDTMempool(BaseMempool):
             while i >= 0 and not selected:
                 if len(self.table[i][j]) > 0:
                     x = self.table[i][j].pop()
-                    self.block.add_txn(x)
+                    self.block.add_txn(x, self.txns)
                     selected = True
                 else:
                     i -= 1
@@ -109,7 +113,7 @@ class SDTMempool(BaseMempool):
             if not selected:
                 for item in range(len(self.table[si][j])):
                     if self.table[si][j][item].weight <= cap:
-                        self.block.add_txn(self.table[si][j][item])
+                        self.block.add_txn(self.table[si][j][item], self.txns)
                         self.table[si][j].pop(item)
                         selected = True
                         break
@@ -120,7 +124,7 @@ class SDTMempool(BaseMempool):
                 if cap < 100:
                     terminated = True
 
-    def save_block(self: "BaseMempool", path: Path = None) -> None:
+    def save_block(self: "SDTMempool", path: Path = None) -> None:
         """Save block.txt.
 
         Args:
