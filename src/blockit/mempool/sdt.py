@@ -101,7 +101,7 @@ class SDTMempool(BaseMempool):
             while i >= 0 and not selected:
                 if len(self.table[i][j]) > 0:
                     x = self.table[i][j].pop()
-                    self.block.add(x)
+                    self.block.add_txn(x)
                     selected = True
                 else:
                     i -= 1
@@ -109,7 +109,7 @@ class SDTMempool(BaseMempool):
             if not selected:
                 for item in range(len(self.table[si][j])):
                     if self.table[si][j][item].weight <= cap:
-                        self.block.add(self.table[si][j][item])
+                        self.block.add_txn(self.table[si][j][item])
                         self.table[si][j].pop(item)
                         selected = True
                         break
@@ -134,10 +134,10 @@ class SDTMempool(BaseMempool):
             ---------------------------
             SDT Details
             ---------------------------
-            Table length          ={len(self.table)}
-            No .of txns           ={self.count}
-            Size class limit      ={self.size_class_limit}
-            Size upper            ={self.size_upper}
-            Denisity class limit  ={self.density_class_limit}
-            Density upper         ={self.density_upper}
+            Table length          = {len(self.table)}
+            No .of txns           = {self.count}
+            Size class limit      = {self.size_class_limit}
+            Size upper            = {self.size_upper}
+            Denisity class limit  = {self.density_class_limit}
+            Density upper         = {self.density_upper}
         """
