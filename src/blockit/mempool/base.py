@@ -30,5 +30,9 @@ class BaseMempool(ABC):
 
     @abstractclassmethod
     def save_block(self: "BaseMempool", path: Path) -> None:
-        """Save block.txt."""
+        """Save block.txt.
+
+        Args:
+            path (Path): Path to save file. Defaults to None.
+        """
         pass
